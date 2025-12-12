@@ -1,65 +1,86 @@
-import Image from "next/image";
+'use client'
+
+import { motion } from 'framer-motion'
+import { ArrowUpRight, TrendingUp, Wallet, PiggyBank } from 'lucide-react'
+import { AssetSummary } from '@/features/dashboard/ui/AssetSummary'
+import { TransactionList } from '@/features/dashboard/ui/TransactionList'
+import { RecommendationCard } from '@/features/dashboard/ui/RecommendationCard'
+import { useAppStore } from '@/shared/store/useAppStore'
+import Link from 'next/link'
+
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+const item = {
+  hidden: { y: 20, opacity: 0 },
+  show: { y: 0, opacity: 1 }
+}
 
 export default function Home() {
+  const user = useAppStore((state) => state.user)
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-8"
+    >
+      <motion.div variants={item} className="flex items-end justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            안녕하세요, <span className="text-primary">{user?.name || '사용자'}</span>님!
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+          <p className="text-muted-foreground mt-2">오늘의 금융 현황을 확인해보세요.</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <button className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-sm font-medium transition-colors border border-white/10">
+          {new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
+        </button>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <RecommendationCard />
+      </motion.div>
+
+      <motion.div variants={item}>
+        <AssetSummary />
+      </motion.div>
+
+      <motion.div variants={item} className="grid gap-6 md:grid-cols-2">
+        <div className="p-6 rounded-2xl bg-card border border-border min-h-[300px]">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold">최근 거래 내역</h3>
+            <Link href="/transactions" className="text-sm text-primary hover:underline">모두 보기</Link>
+          </div>
+          <TransactionList />
         </div>
-      </main>
-    </div>
-  );
+
+        <div className="p-6 rounded-2xl bg-card border border-border min-h-[300px] flex flex-col items-center justify-center text-center space-y-4 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary animate-pulse relative z-10">
+            <TrendingUp size={32} />
+          </div>
+          <div className="relative z-10">
+            <h3 className="text-lg font-semibold">AI 금융 인사이트</h3>
+            <p className="text-muted-foreground max-w-xs mx-auto mt-2">
+              이번 달 커피 지출이 15% 증가했습니다. 예산을 설정해보시는 건 어떨까요?
+            </p>
+          </div>
+          <Link href="/chat">
+            <button className="relative z-10 px-6 py-2 rounded-full bg-primary text-primary-foreground font-medium hover:bg-primary/90 hover:scale-105 transition-all shadow-lg shadow-primary/25">
+              Tickle에게 물어보기
+            </button>
+          </Link>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
 }
