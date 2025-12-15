@@ -70,7 +70,7 @@ export function TransactionList() {
                 t.amount > 0 ? "text-emerald-500" : "text-destructive"
               }`}
             >
-              {t.amount > 0 ? "+" : ""}₩{Math.abs(t.amount).toLocaleString()}
+              {t.amount > 0 ? "+" : "-"}₩{Math.abs(t.amount).toLocaleString()}
             </span>
           </motion.div>
         );
