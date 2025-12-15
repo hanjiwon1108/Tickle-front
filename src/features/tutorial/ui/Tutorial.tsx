@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronRight, ChevronLeft } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
 
 const steps = [
   {
@@ -35,6 +36,8 @@ export function Tutorial() {
   const [isOpen, setIsOpen] = useState(false)
   const [currentStep, setCurrentStep] = useState(0)
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null)
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     const hasSeenTutorial = localStorage.getItem('hasSeenTutorial')
@@ -47,6 +50,13 @@ export function Tutorial() {
   useEffect(() => {
     setTargetRect(null)
   }, [currentStep])
+
+  // Navigate to dashboard if on step 2 (index 1) and not on dashboard
+  useEffect(() => {
+    if (isOpen && currentStep === 1 && pathname !== '/') {
+      router.push('/')
+    }
+  }, [currentStep, isOpen, pathname, router])
 
   const updateTargetRect = useCallback(() => {
     if (!isOpen) return
@@ -120,7 +130,7 @@ export function Tutorial() {
       window.removeEventListener('scroll', updateTargetRect)
       clearTimeout(timer)
     }
-  }, [updateTargetRect])
+  }, [updateTargetRect, pathname])
 
   const handleClose = () => {
     setIsOpen(false)
